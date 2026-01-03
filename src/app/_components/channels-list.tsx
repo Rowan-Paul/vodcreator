@@ -36,6 +36,7 @@ export function ChannelsList() {
           channelName={channel.name}
           avatarUrl={channel.avatarUrl}
           initialVodCount={channel.vodCount}
+          latestVod={channel.latestVod}
         />
       ))}
     </div>

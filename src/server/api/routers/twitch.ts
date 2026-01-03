@@ -39,18 +39,38 @@ export const twitchRouter = createTRPCRouter({
     const channels = await ctx.db.twitchChannel.findMany({
       where: { userId: ctx.session.user.id },
       orderBy: { createdAt: "desc" },
-      include: {
-        vods: {
-          orderBy: { publishedAt: "desc" },
-          take: 1,
-        },
+      select: {
+        id: true,
+        name: true,
+        userId: true,
+        twitchId: true,
+        avatarUrl: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
-    return channels.map((channel) => ({
+    const vodCounts = await Promise.all(
+      channels.map((channel) =>
+        ctx.db.vOD.count({
+          where: { channelId: channel.id },
+        }),
+      ),
+    );
+
+    const latestVods = await Promise.all(
+      channels.map((channel) =>
+        ctx.db.vOD.findFirst({
+          where: { channelId: channel.id },
+          orderBy: { publishedAt: "desc" },
+        }),
+      ),
+    );
+
+    return channels.map((channel, index) => ({
       ...channel,
-      vodCount: channel.vods.length,
-      latestVod: channel.vods[0] ?? null,
+      vodCount: vodCounts[index] ?? 0,
+      latestVod: latestVods[index] ?? null,
     }));
   }),
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RefreshCw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,12 +10,22 @@ import { Spinner } from "@/components/ui/spinner";
 import { VODCommands } from "./vod-commands";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
+import * as commands from "@/server/utils/commands";
 
 interface VODListProps {
   channelId: string;
   channelName: string;
   avatarUrl: string | null;
   initialVodCount: number;
+  latestVod: {
+    id: string;
+    thumbnail: string;
+    title: string;
+    publishedAt: Date;
+    duration: number;
+    vodId: string;
+    url: string;
+  } | null;
 }
 
 interface VODData {
@@ -29,10 +39,10 @@ interface VODData {
   chatRenderCommand: string;
 }
 
-export function VODList({ channelId, channelName, avatarUrl, initialVodCount }: VODListProps) {
+export function VODList({ channelId, channelName, avatarUrl, initialVodCount, latestVod }: VODListProps) {
   const [offset, setOffset] = useState(0);
   const [vods, setVods] = useState<VODData[]>([]);
-  const [hasMore, setHasMore] = useState(false);
+  const [hasMore, setHasMore] = useState(initialVodCount > 1);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [displayCount, setDisplayCount] = useState(1);
 
@@ -42,6 +52,39 @@ export function VODList({ channelId, channelName, avatarUrl, initialVodCount }: 
   const removeChannel = api.twitch.removeChannel.useMutation();
 
   const utils = api.useUtils();
+
+  useEffect(() => {
+    if (latestVod && vods.length === 0) {
+      const vodData: VODData = {
+        id: latestVod.id,
+        thumbnail: latestVod.thumbnail,
+        title: latestVod.title,
+        publishedAt: latestVod.publishedAt,
+        duration: latestVod.duration,
+        videoCommand: commands.generateVideoCommand({
+          vodId: latestVod.vodId,
+          title: latestVod.title,
+          publishedAt: latestVod.publishedAt,
+        }),
+        chatDownloadCommand: commands.generateChatDownloadCommand({
+          vodId: latestVod.vodId,
+        }),
+        chatRenderCommand: commands.generateChatRenderCommand(
+          {
+            vodId: latestVod.vodId,
+            title: latestVod.title,
+            publishedAt: latestVod.publishedAt,
+          },
+          {
+            chatWidth: settings?.chatWidth ?? 400,
+            chatHeight: settings?.chatHeight ?? 350,
+            chatFont: settings?.chatFont ?? "Arial",
+          },
+        ),
+      };
+      setVods([vodData]);
+    }
+  }, [latestVod, settings, vods.length]);
 
   const handleLoadMore = () => {
     const newOffset = offset + (settings?.vodsPerLoad ?? 5);
@@ -105,7 +148,7 @@ export function VODList({ channelId, channelName, avatarUrl, initialVodCount }: 
       .slice(0, 2);
   };
 
-  if (isRefreshing || vods.length === 0) {
+  if (isRefreshing || (vods.length === 0 && !latestVod)) {
     return (
       <Card>
         <CardHeader>
