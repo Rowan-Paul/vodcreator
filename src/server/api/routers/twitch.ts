@@ -1,9 +1,6 @@
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-} from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import * as twitch from "@/server/services/twitch";
 import * as commands from "@/server/utils/commands";
 
@@ -75,7 +72,13 @@ export const twitchRouter = createTRPCRouter({
   }),
 
   loadMoreVods: protectedProcedure
-    .input(z.object({ channelId: z.string(), limit: z.number().min(1), offset: z.number().min(0) }))
+    .input(
+      z.object({
+        channelId: z.string(),
+        limit: z.number().min(1),
+        offset: z.number().min(0),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const channel = await ctx.db.twitchChannel.findFirst({
         where: { id: input.channelId, userId: ctx.session.user.id },
@@ -115,7 +118,10 @@ export const twitchRouter = createTRPCRouter({
         throw new Error("Channel not found");
       }
 
-      const { videos, cursor } = await twitch.getVideosByUserId(channel.twitchId, input.limit);
+      const { videos, cursor } = await twitch.getVideosByUserId(
+        channel.twitchId,
+        input.limit,
+      );
 
       const createdVods = await Promise.all(
         videos.map((video) =>

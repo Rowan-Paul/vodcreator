@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
+import { Plus } from "lucide-react";
 
 export function AddChannel() {
   const [username, setUsername] = useState("");
@@ -39,16 +40,23 @@ export function AddChannel() {
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         disabled={addChannel.isPending}
-        className="flex-1"
+        className="flex-1 border-[#3f3f46] bg-[#0e0e10] text-white placeholder:text-[#71717a] focus:border-[#9146ff] focus:ring-[#9146ff]/20"
       />
-      <Button type="submit" disabled={addChannel.isPending}>
+      <Button
+        type="submit"
+        disabled={addChannel.isPending}
+        className="bg-[#9146ff] text-white hover:bg-[#772ce8]"
+      >
         {addChannel.isPending ? (
           <>
             <Spinner className="mr-2 h-4 w-4" />
             Adding...
           </>
         ) : (
-          "Add Channel"
+          <>
+            <Plus className="mr-2 h-4 w-4" />
+            Add
+          </>
         )}
       </Button>
     </form>

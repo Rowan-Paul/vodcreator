@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { RefreshCw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { VODCommands } from "./vod-commands";
@@ -39,7 +39,13 @@ interface VODData {
   chatRenderCommand: string;
 }
 
-export function VODList({ channelId, channelName, avatarUrl, initialVodCount, latestVod }: VODListProps) {
+export function VODList({
+  channelId,
+  channelName,
+  avatarUrl,
+  initialVodCount,
+  latestVod,
+}: VODListProps) {
   const [offset, setOffset] = useState(0);
   const [vods, setVods] = useState<VODData[]>([]);
   const [hasMore, setHasMore] = useState(initialVodCount > 1);
@@ -150,19 +156,22 @@ export function VODList({ channelId, channelName, avatarUrl, initialVodCount, la
 
   if (isRefreshing || (vods.length === 0 && !latestVod)) {
     return (
-      <Card>
-        <CardHeader>
+      <Card className="border-[#1f1f23] bg-[#18181b]">
+        <CardContent className="p-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-16 w-16">
+            <div className="flex items-center gap-4">
+              <Avatar className="h-14 w-14 border-2 border-[#9146ff]">
                 <AvatarImage src={avatarUrl ?? undefined} alt={channelName} />
-                <AvatarFallback>{getInitials(channelName)}</AvatarFallback>
+                <AvatarFallback className="bg-[#9146ff]">
+                  {getInitials(channelName)}
+                </AvatarFallback>
               </Avatar>
               <div>
-                <CardTitle>{channelName}</CardTitle>
-                <CardDescription>
-                  {initialVodCount} {initialVodCount === 1 ? "VOD" : "VODs"} in database
-                </CardDescription>
+                <h3 className="font-semibold">{channelName}</h3>
+                <p className="text-sm text-[#adadb8]">
+                  {initialVodCount} {initialVodCount === 1 ? "VOD" : "VODs"} in
+                  database
+                </p>
               </div>
             </div>
             <div className="flex gap-2">
@@ -171,6 +180,7 @@ export function VODList({ channelId, channelName, avatarUrl, initialVodCount, la
                 size="icon"
                 onClick={handleRefresh}
                 disabled={isRefreshing}
+                className="border-[#3f3f46] bg-[#0e0e10] text-white hover:bg-[#1f1f23]"
               >
                 {isRefreshing ? (
                   <Spinner className="h-4 w-4" />
@@ -178,37 +188,38 @@ export function VODList({ channelId, channelName, avatarUrl, initialVodCount, la
                   <RefreshCw className="h-4 w-4" />
                 )}
               </Button>
-              <Button variant="outline" size="icon" onClick={handleRemove}>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleRemove}
+                className="border-[#3f3f46] bg-[#0e0e10] text-white hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400"
+              >
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          {vods.length === 0 && !isRefreshing && (
-            <div className="text-center py-8 text-muted-foreground">
-              No VODs loaded yet. Click refresh to fetch latest VODs.
-            </div>
-          )}
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-16 w-16">
+    <Card className="border-[#1f1f23] bg-[#18181b]">
+      <CardContent className="p-6">
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-14 w-14 border-2 border-[#9146ff]">
               <AvatarImage src={avatarUrl ?? undefined} alt={channelName} />
-              <AvatarFallback>{getInitials(channelName)}</AvatarFallback>
+              <AvatarFallback className="bg-[#9146ff]">
+                {getInitials(channelName)}
+              </AvatarFallback>
             </Avatar>
             <div>
-              <CardTitle>{channelName}</CardTitle>
-              <CardDescription>
-                {initialVodCount} {initialVodCount === 1 ? "VOD" : "VODs"} in database
-              </CardDescription>
+              <h3 className="font-semibold">{channelName}</h3>
+              <p className="text-sm text-[#adadb8]">
+                {initialVodCount} {initialVodCount === 1 ? "VOD" : "VODs"} in
+                database
+              </p>
             </div>
           </div>
           <div className="flex gap-2">
@@ -217,6 +228,7 @@ export function VODList({ channelId, channelName, avatarUrl, initialVodCount, la
               size="icon"
               onClick={handleRefresh}
               disabled={isRefreshing}
+              className="border-[#3f3f46] bg-[#0e0e10] text-white hover:bg-[#1f1f23]"
             >
               {isRefreshing ? (
                 <Spinner className="h-4 w-4" />
@@ -224,14 +236,18 @@ export function VODList({ channelId, channelName, avatarUrl, initialVodCount, la
                 <RefreshCw className="h-4 w-4" />
               )}
             </Button>
-            <Button variant="outline" size="icon" onClick={handleRemove}>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleRemove}
+              className="border-[#3f3f46] bg-[#0e0e10] text-white hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400"
+            >
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+
+        <div className="space-y-6">
           {vods.slice(0, displayCount).map((vod, index) => (
             <div key={vod.id}>
               <VODCommands
@@ -243,17 +259,20 @@ export function VODList({ channelId, channelName, avatarUrl, initialVodCount, la
                 chatDownloadCommand={vod.chatDownloadCommand}
                 chatRenderCommand={vod.chatRenderCommand}
               />
-              {index < displayCount - 1 && <Separator className="my-4" />}
+              {index < displayCount - 1 && (
+                <Separator className="my-6 bg-[#1f1f23]" />
+              )}
             </div>
           ))}
         </div>
 
         {hasMore && displayCount < vods.length && (
-          <div className="mt-4 text-center">
+          <div className="mt-6 text-center">
             <Button
               variant="outline"
               onClick={handleLoadMore}
               disabled={loadMoreVods.isPending}
+              className="border-[#3f3f46] bg-[#0e0e10] text-white hover:bg-[#1f1f23]"
             >
               {loadMoreVods.isPending ? (
                 <>
@@ -261,7 +280,7 @@ export function VODList({ channelId, channelName, avatarUrl, initialVodCount, la
                   Loading...
                 </>
               ) : (
-                "Load More"
+                "Load More VODs"
               )}
             </Button>
           </div>

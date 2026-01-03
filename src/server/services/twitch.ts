@@ -58,7 +58,9 @@ export async function getAppAccessToken() {
   );
 
   if (!response.ok) {
-    throw new Error(`Failed to get Twitch access token: ${response.statusText}`);
+    throw new Error(
+      `Failed to get Twitch access token: ${response.statusText}`,
+    );
   }
 
   const data = (await response.json()) as TwitchTokenResponse;
@@ -107,7 +109,11 @@ export async function getUserByUsername(username: string) {
   };
 }
 
-export async function getVideosByUserId(userId: string, limit = 20, after?: string) {
+export async function getVideosByUserId(
+  userId: string,
+  limit = 20,
+  after?: string,
+) {
   const token = await getAppAccessToken();
 
   if (!env.TWITCH_CLIENT_ID) {
