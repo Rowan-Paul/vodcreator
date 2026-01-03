@@ -8,10 +8,6 @@ generator client {
 
 datasource db {
     provider = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     url      = env("DATABASE_URL")
 }
 
@@ -34,12 +30,12 @@ model Account {
     type                     String
     provider                 String
     providerAccountId        String
-    refresh_token            String? // @db.Text
-    access_token             String? // @db.Text
+    refresh_token            String?
+    access_token             String?
     expires_at               Int?
     token_type               String?
     scope                    String?
-    id_token                 String? // @db.Text
+    id_token                 String?
     session_state            String?
     user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
     refresh_token_expires_in Int?
@@ -56,14 +52,16 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String         @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?        @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
     posts         Post[]
+    twitchChannels TwitchChannel[]
+    settings      UserSettings?
 }
 
 model VerificationToken {
@@ -72,4 +70,43 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model TwitchChannel {
+    id         String   @id @default(cuid())
+    name       String
+    userId     String
+    twitchId   String
+    avatarUrl  String?
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    vods       VOD[]
+    user       User     @relation(fields: [userId], references: [id])
+
+    @@unique([userId, twitchId])
+}
+
+model VOD {
+  id          String   @id @default(cuid())
+  vodId       String   @unique
+  title       String
+  publishedAt DateTime
+  duration    Int
+  url         String
+  thumbnail   String
+  channelId   String
+  channel     TwitchChannel @relation(fields: [channelId], references: [id])
+  fetchedAt   DateTime @default(now())
+
+  @@index([channelId, publishedAt])
+}
+
+model UserSettings {
+    id           String   @id @default(cuid())
+    userId       String   @unique
+    chatWidth    Int      @default(400)
+    chatHeight   Int      @default(350)
+    chatFont     String   @default("Arial")
+    vodsPerLoad  Int      @default(5)
+    user         User     @relation(fields: [userId], references: [id])
 }
