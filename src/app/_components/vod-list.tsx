@@ -105,6 +105,53 @@ export function VODList({ channelId, channelName, avatarUrl, initialVodCount }: 
       .slice(0, 2);
   };
 
+  if (isRefreshing || vods.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={avatarUrl ?? undefined} alt={channelName} />
+                <AvatarFallback>{getInitials(channelName)}</AvatarFallback>
+              </Avatar>
+              <div>
+                <CardTitle>{channelName}</CardTitle>
+                <CardDescription>
+                  {initialVodCount} {initialVodCount === 1 ? "VOD" : "VODs"} in database
+                </CardDescription>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+              >
+                {isRefreshing ? (
+                  <Spinner className="h-4 w-4" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
+              </Button>
+              <Button variant="outline" size="icon" onClick={handleRemove}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {vods.length === 0 && !isRefreshing && (
+            <div className="text-center py-8 text-muted-foreground">
+              No VODs loaded yet. Click refresh to fetch latest VODs.
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -141,30 +188,22 @@ export function VODList({ channelId, channelName, avatarUrl, initialVodCount }: 
         </div>
       </CardHeader>
       <CardContent>
-        {vods.length === 0 && !isRefreshing && (
-          <div className="text-center py-8 text-muted-foreground">
-            No VODs loaded yet. Click refresh to fetch latest VODs.
-          </div>
-        )}
-
-        {vods.length > 0 && (
-          <div className="space-y-4">
-            {vods.slice(0, displayCount).map((vod, index) => (
-              <div key={vod.id}>
-                <VODCommands
-                  thumbnail={vod.thumbnail}
-                  title={vod.title}
-                  publishedAt={vod.publishedAt}
-                  duration={vod.duration}
-                  videoCommand={vod.videoCommand}
-                  chatDownloadCommand={vod.chatDownloadCommand}
-                  chatRenderCommand={vod.chatRenderCommand}
-                />
-                {index < displayCount - 1 && <Separator className="my-4" />}
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="space-y-4">
+          {vods.slice(0, displayCount).map((vod, index) => (
+            <div key={vod.id}>
+              <VODCommands
+                thumbnail={vod.thumbnail}
+                title={vod.title}
+                publishedAt={vod.publishedAt}
+                duration={vod.duration}
+                videoCommand={vod.videoCommand}
+                chatDownloadCommand={vod.chatDownloadCommand}
+                chatRenderCommand={vod.chatRenderCommand}
+              />
+              {index < displayCount - 1 && <Separator className="my-4" />}
+            </div>
+          ))}
+        </div>
 
         {hasMore && displayCount < vods.length && (
           <div className="mt-4 text-center">
