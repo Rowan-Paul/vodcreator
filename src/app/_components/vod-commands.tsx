@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, Download, MessageSquare, Play } from "lucide-react";
+import { Check, Copy, Download, MessageSquare, Play } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -91,7 +91,11 @@ export function VODCommands({
                     {copied === "video" ? "Copied!" : "Click to copy"}
                   </span>
                 </div>
-                <Copy className="ml-1 h-3 w-3 shrink-0 opacity-50" />
+                {copied === "video" ? (
+                  <Check className="ml-1 h-3 w-3 shrink-0 text-green-500" />
+                ) : (
+                  <Copy className="ml-1 h-3 w-3 shrink-0 opacity-50" />
+                )}
               </Button>
 
               <Button
@@ -111,7 +115,11 @@ export function VODCommands({
                     {copied === "chat" ? "Copied!" : "Click to copy"}
                   </span>
                 </div>
-                <Copy className="ml-1 h-3 w-3 shrink-0 opacity-50" />
+                {copied === "chat" ? (
+                  <Check className="ml-1 h-3 w-3 shrink-0 text-green-500" />
+                ) : (
+                  <Copy className="ml-1 h-3 w-3 shrink-0 opacity-50" />
+                )}
               </Button>
 
               <Button
@@ -131,7 +139,11 @@ export function VODCommands({
                     {copied === "render" ? "Copied!" : "Click to copy"}
                   </span>
                 </div>
-                <Copy className="ml-1 h-3 w-3 shrink-0 opacity-50" />
+                {copied === "render" ? (
+                  <Check className="ml-1 h-3 w-3 shrink-0 text-green-500" />
+                ) : (
+                  <Copy className="ml-1 h-3 w-3 shrink-0 opacity-50" />
+                )}
               </Button>
             </div>
           </div>
