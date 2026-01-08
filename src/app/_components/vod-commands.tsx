@@ -80,7 +80,7 @@ export function VODCommands({
                 variant="outline"
                 size="sm"
                 className="justify-start gap-2 border-[#3f3f46] bg-[#18181b] text-white hover:bg-[#1f1f23]"
-                onClick={() => copyToClipboard(videoCommand, "Video download")}
+                onClick={() => copyToClipboard(videoCommand, "video")}
               >
                 <Play className="h-4 w-4 shrink-0 text-[#9146ff]" />
                 <div className="flex min-w-0 flex-1 flex-col items-start gap-0.5 overflow-hidden">
@@ -103,7 +103,7 @@ export function VODCommands({
                 size="sm"
                 className="justify-start gap-2 border-[#3f3f46] bg-[#18181b] text-white hover:bg-[#1f1f23]"
                 onClick={() =>
-                  copyToClipboard(chatDownloadCommand, "Chat download")
+                  copyToClipboard(chatDownloadCommand, "chat")
                 }
               >
                 <Download className="h-4 w-4 shrink-0 text-[#9146ff]" />
@@ -127,7 +127,7 @@ export function VODCommands({
                 size="sm"
                 className="justify-start gap-2 border-[#3f3f46] bg-[#18181b] text-white hover:bg-[#1f1f23]"
                 onClick={() =>
-                  copyToClipboard(chatRenderCommand, "Chat render")
+                  copyToClipboard(chatRenderCommand, "render")
                 }
               >
                 <MessageSquare className="h-4 w-4 shrink-0 text-[#9146ff]" />
