@@ -5,7 +5,7 @@ import { ChannelsList } from "@/app/_components/channels-list";
 import { Settings } from "@/app/_components/settings";
 import { auth } from "@/server/auth";
 import { api, HydrateClient } from "@/trpc/server";
-import { LogOut, Settings as SettingsIcon, Twitch } from "lucide-react";
+import { LogOut, Twitch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -31,12 +31,6 @@ export default async function Home() {
               </div>
 
               <nav className="flex items-center gap-3">
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="#settings">
-                    <SettingsIcon className="mr-2 h-4 w-4" />
-                    Settings
-                  </Link>
-                </Button>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-9 w-9">
                     <AvatarImage
@@ -102,7 +96,7 @@ export default async function Home() {
                 </div>
               </div>
 
-              <div id="settings" className="lg:sticky lg:top-24 lg:h-fit">
+              <div className="lg:sticky lg:top-24 lg:h-fit">
                 <Settings />
               </div>
             </div>
