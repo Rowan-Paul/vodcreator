@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { RefreshCw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -51,6 +51,7 @@ export function VODList({
   const [hasMore, setHasMore] = useState(initialVodCount > 1);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [displayCount, setDisplayCount] = useState(1);
+  const hasCheckedRefresh = useRef(false);
 
   const { data: settings } = api.twitch.getSettings.useQuery();
   const loadMoreVods = api.twitch.loadMoreVods.useMutation();
@@ -59,32 +60,41 @@ export function VODList({
 
   const utils = api.useUtils();
 
-  const handleRefresh = useCallback(() => {
-    setIsRefreshing(true);
-    void refreshChannelVods.mutate(
-      { channelId, limit: settings?.vodsPerLoad ?? 5 },
-      {
-        onSuccess: ({ vods: newVods, hasMore: more }) => {
-          setVods(newVods);
-          setOffset(newVods.length);
-          setHasMore(more);
-          setDisplayCount(1);
-          setIsRefreshing(false);
-          toast.success(`Refreshed ${newVods.length} VODs`);
-          void utils.twitch.listChannels.invalidate();
+  const handleRefresh = useCallback(
+    (showLoading = true) => {
+      if (showLoading) {
+        setIsRefreshing(true);
+      }
+      void refreshChannelVods.mutate(
+        { channelId, limit: settings?.vodsPerLoad ?? 5 },
+        {
+          onSuccess: ({ vods: newVods, hasMore: more }) => {
+            setVods(newVods);
+            setOffset(newVods.length);
+            setHasMore(more);
+            setDisplayCount(1);
+            if (showLoading) {
+              setIsRefreshing(false);
+            }
+            toast.success(`Refreshed ${newVods.length} VODs`);
+            void utils.twitch.listChannels.invalidate();
+          },
+          onError: (error) => {
+            if (showLoading) {
+              setIsRefreshing(false);
+            }
+            toast.error(error.message);
+          },
         },
-        onError: (error) => {
-          setIsRefreshing(false);
-          toast.error(error.message);
-        },
-      },
-    );
-  }, [
-    channelId,
-    settings?.vodsPerLoad,
-    refreshChannelVods,
-    utils.twitch.listChannels,
-  ]);
+      );
+    },
+    [
+      channelId,
+      settings?.vodsPerLoad,
+      refreshChannelVods,
+      utils.twitch.listChannels,
+    ],
+  );
 
   useEffect(() => {
     if (latestVod && vods.length === 0) {
@@ -120,12 +130,13 @@ export function VODList({
   }, [latestVod, settings, vods.length]);
 
   useEffect(() => {
-    if (latestVod && settings) {
+    if (latestVod && settings && !hasCheckedRefresh.current) {
+      hasCheckedRefresh.current = true;
       const hoursSincePublished =
         (Date.now() - new Date(latestVod.publishedAt).getTime()) /
         (1000 * 60 * 60);
       if (hoursSincePublished > 12) {
-        handleRefresh();
+        handleRefresh(false);
       }
     }
   }, [latestVod, settings, handleRefresh]);
@@ -194,7 +205,7 @@ export function VODList({
               <Button
                 variant="outline"
                 size="icon"
-                onClick={handleRefresh}
+                onClick={() => handleRefresh(true)}
                 disabled={isRefreshing}
                 className="border-[#3f3f46] bg-[#0e0e10] text-white hover:bg-[#1f1f23]"
               >
@@ -242,7 +253,7 @@ export function VODList({
             <Button
               variant="outline"
               size="icon"
-              onClick={handleRefresh}
+              onClick={() => handleRefresh(true)}
               disabled={isRefreshing}
               className="border-[#3f3f46] bg-[#0e0e10] text-white hover:bg-[#1f1f23]"
             >
