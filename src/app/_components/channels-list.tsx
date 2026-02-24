@@ -1,12 +1,13 @@
 "use client";
 
-import { api } from "@/trpc/react";
 import { VODList } from "@/app/_components/vod-list";
+import { useVodStore } from "@/app/_stores/vod-store";
 
 export function ChannelsList() {
-  const { data: channels, isLoading } = api.twitch.listChannels.useQuery();
+  const channels = useVodStore((state) => state.channels);
+  const hydrated = useVodStore((state) => state.hydrated);
 
-  if (isLoading) {
+  if (!hydrated) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
@@ -48,10 +49,6 @@ export function ChannelsList() {
         <VODList
           key={channel.id}
           channelId={channel.id}
-          channelName={channel.name}
-          avatarUrl={channel.avatarUrl}
-          initialVodCount={channel.vodCount}
-          latestVod={channel.latestVod}
         />
       ))}
     </div>

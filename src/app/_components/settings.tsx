@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,40 +18,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { api } from "@/trpc/react";
+import { useVodStore } from "@/app/_stores/vod-store";
 import { toast } from "sonner";
 import { Settings as SettingsIcon } from "lucide-react";
 
 export function Settings() {
-  const { data: settings } = api.twitch.getSettings.useQuery();
-  const updateSettings = api.twitch.updateSettings.useMutation();
-  const utils = api.useUtils();
+  const settings = useVodStore((state) => state.settings);
+  const updateSettings = useVodStore((state) => state.updateSettings);
 
-  const [chatWidth, setChatWidth] = useState(settings?.chatWidth ?? 400);
-  const [chatHeight, setChatHeight] = useState(settings?.chatHeight ?? 350);
-  const [chatFont, setChatFont] = useState(settings?.chatFont ?? "Arial");
-  const [vodsPerLoad, setVodsPerLoad] = useState(settings?.vodsPerLoad ?? 5);
+  const [chatWidth, setChatWidth] = useState(settings.chatWidth);
+  const [chatHeight, setChatHeight] = useState(settings.chatHeight);
+  const [chatFont, setChatFont] = useState(settings.chatFont);
+  const [vodsPerLoad, setVodsPerLoad] = useState(settings.vodsPerLoad);
+
+  useEffect(() => {
+    setChatWidth(settings.chatWidth);
+    setChatHeight(settings.chatHeight);
+    setChatFont(settings.chatFont);
+    setVodsPerLoad(settings.vodsPerLoad);
+  }, [settings]);
 
   const handleSave = () => {
-    void updateSettings.mutate(
-      { chatWidth, chatHeight, chatFont, vodsPerLoad },
-      {
-        onSuccess: () => {
-          toast.success("Settings saved successfully");
-          void utils.twitch.getSettings.invalidate();
-        },
-        onError: (error) => {
-          toast.error(error?.message ?? "Failed to save settings");
-        },
-      },
-    );
+    updateSettings({ chatWidth, chatHeight, chatFont, vodsPerLoad });
+    toast.success("Settings saved successfully");
   };
 
   const hasChanges =
-    chatWidth !== (settings?.chatWidth ?? 400) ||
-    chatHeight !== (settings?.chatHeight ?? 350) ||
-    chatFont !== (settings?.chatFont ?? "Arial") ||
-    vodsPerLoad !== (settings?.vodsPerLoad ?? 5);
+    chatWidth !== settings.chatWidth ||
+    chatHeight !== settings.chatHeight ||
+    chatFont !== settings.chatFont ||
+    vodsPerLoad !== settings.vodsPerLoad;
 
   return (
     <Card className="border-[#1f1f23] bg-[#18181b]">
@@ -140,10 +136,10 @@ export function Settings() {
 
         <Button
           onClick={handleSave}
-          disabled={!hasChanges || updateSettings.isPending}
+          disabled={!hasChanges}
           className="w-full bg-[#9146ff] text-white hover:bg-[#772ce8]"
         >
-          {updateSettings.isPending ? "Saving..." : "Save Settings"}
+          Save Settings
         </Button>
       </CardContent>
     </Card>

@@ -4,7 +4,7 @@ This file contains guidelines for agentic coding agents working in this reposito
 
 ## Project Overview
 
-This is a T3 Stack application (Next.js 15, TypeScript, tRPC, Tailwind CSS, Prisma, NextAuth). Uses PostgreSQL database.
+This is a T3 Stack application (Next.js 15, TypeScript, tRPC, Tailwind CSS, NextAuth).
 
 ## Commands
 
@@ -21,12 +21,6 @@ This is a T3 Stack application (Next.js 15, TypeScript, tRPC, Tailwind CSS, Pris
 - `pnpm dev` - Start dev server with Turbo
 - `pnpm preview` - Build and start production server
 
-### Database (Prisma)
-- `pnpm db:generate` - Generate Prisma client and run migrations
-- `pnpm db:migrate` - Deploy migrations (production)
-- `pnpm db:push` - Push schema changes directly to database
-- `pnpm db:studio` - Open Prisma Studio
-
 ### Testing
 No test framework configured. Test manually via dev server.
 
@@ -41,7 +35,7 @@ No test framework configured. Test manually via dev server.
 
 ### Imports
 - Use inline type imports: `import type { X } from "..."` and `import { type Y } from "..."`
-- Use absolute imports with `@/*` alias: `import { db } from "@/server/db"`
+- Use absolute imports with `@/*` alias: `import { auth } from "@/server/auth"`
 - React imports: `import { useState } from "react"`
 - Place type imports first, then regular imports
 
@@ -49,8 +43,6 @@ No test framework configured. Test manually via dev server.
 - Files: kebab-case or camelCase (e.g., `post.tsx`, `auth-config.ts`)
 - Components: PascalCase (e.g., `LatestPost`, `HydrateClient`)
 - Functions/variables: camelCase (e.g., `createCaller`, `createQueryClient`)
-- Database models: PascalCase (e.g., `User`, `Post`, `Account`)
-
 ### React & Next.js
 - Use Server Components by default, add `"use client"` directive for client components
 - Use `async/await` for data fetching in Server Components
@@ -64,13 +56,7 @@ No test framework configured. Test manually via dev server.
 - Use `publicProcedure` for unauthenticated endpoints
 - Use `protectedProcedure` for authenticated endpoints (requires session)
 - Validate inputs with Zod: `.input(z.object({ text: z.string() }))`
-- Access database via `ctx.db` and session via `ctx.session`
-
-### Prisma
-- Generated client at `generated/prisma/` (excluded from tsconfig)
-- Use global singleton pattern (see `src/server/db.ts`)
-- Query results can be null - handle with `??` operator
-- Use `findFirst` for single results, return `post ?? null` pattern
+- Access session via `ctx.session`
 
 ### NextAuth
 - Auth config in `src/server/auth/config.ts`
@@ -78,9 +64,8 @@ No test framework configured. Test manually via dev server.
 - Access session via `await auth()` in Server Components
 
 ### Error Handling
-- Always handle null/undefined from Prisma queries
 - Use Zod for runtime input validation
-- Use `try/catch` around database operations when appropriate
+- Use `try/catch` around external API operations when appropriate
 
 ### Formatting
 - Prettier with `prettier-plugin-tailwindcss` (sorts Tailwind classes)
@@ -96,6 +81,4 @@ When making changes:
 4. Test changes in dev server
 
 Important:
-- Never run `pnpm db:push` in production - use migrations
-- Generated Prisma client changes are not committed (generated/ excluded)
 - Always run typecheck before committing

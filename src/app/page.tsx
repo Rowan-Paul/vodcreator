@@ -4,18 +4,13 @@ import { AddChannel } from "@/app/_components/add-channel";
 import { ChannelsList } from "@/app/_components/channels-list";
 import { Settings } from "@/app/_components/settings";
 import { auth } from "@/server/auth";
-import { api, HydrateClient } from "@/trpc/server";
+import { HydrateClient } from "@/trpc/server";
 import { LogOut, Twitch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function Home() {
   const session = await auth();
-
-  if (session?.user) {
-    void api.twitch.listChannels.prefetch();
-    void api.twitch.getSettings.prefetch();
-  }
 
   return (
     <HydrateClient>

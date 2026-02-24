@@ -1,6 +1,6 @@
 # VOD Creator
 
-A web application to generate Twitch VOD download commands for TwitchDownloaderCLI. Built with the T3 Stack (Next.js, TypeScript, tRPC, Tailwind CSS, Prisma, NextAuth).
+A web application to generate Twitch VOD download commands for TwitchDownloaderCLI. Built with the T3 Stack (Next.js, TypeScript, tRPC, Tailwind CSS, NextAuth).
 
 ## Features
 
@@ -12,7 +12,7 @@ A web application to generate Twitch VOD download commands for TwitchDownloaderC
   - Chat render
 - Customize chat dimensions and font
 - Paginated VOD loading
-- Persistent storage with PostgreSQL
+- Persistent local state in browser storage (Zustand `persist`)
 - Google OAuth authentication
 
 ## Tech Stack
@@ -21,8 +21,6 @@ A web application to generate Twitch VOD download commands for TwitchDownloaderC
 - [React 19](https://react.dev) - UI library
 - [TypeScript](https://www.typescriptlang.org) - Type safety
 - [tRPC](https://trpc.io) - Type-safe API
-- [Prisma](https://prisma.io) - ORM
-- [PostgreSQL](https://www.postgresql.org) - Database
 - [NextAuth.js](https://next-auth.js.org) - Authentication
 - [Tailwind CSS v4](https://tailwindcss.com) - Styling
 - [shadcn/ui](https://ui.shadcn.com) - UI components
@@ -32,7 +30,6 @@ A web application to generate Twitch VOD download commands for TwitchDownloaderC
 ### Prerequisites
 
 - Node.js 18+ and pnpm
-- PostgreSQL database
 - Google Cloud account
 - Twitch Developer account
 
@@ -74,33 +71,15 @@ TWITCH_CLIENT_SECRET="your-twitch-client-secret"
 # NextAuth
 AUTH_SECRET="generate-with: npx auth secret"
 
-# Database
-DATABASE_URL="postgresql://postgres:password@localhost:5432/vodcreator"
 ```
 
-### 4. Database Setup
-
-```bash
-# Start your PostgreSQL database
-# Using Docker:
-docker run -d --name vodcreator-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=vodcreator -p 5432:5432 postgres:latest
-
-# Or use your existing database connection string
-```
-
-### 5. Install Dependencies
+### 4. Install Dependencies
 
 ```bash
 pnpm install
 ```
 
-### 6. Run Migrations
-
-```bash
-pnpm db:generate
-```
-
-### 7. Start Development Server
+### 5. Start Development Server
 
 ```bash
 pnpm dev
@@ -117,7 +96,7 @@ Visit `http://localhost:3000` to start using the app.
    - **Video Download**: Downloads the VOD video file
    - **Chat Download**: Downloads the chat JSON file
    - **Chat Render**: Renders the chat as a video file
-5. **Load More**: Click "Load More" to fetch additional VODs from the database
+5. **Load More**: Click "Load More" to fetch additional VODs from Twitch and cache them locally
 6. **Settings**: Customize chat dimensions, font, and VODs per load
 
 ## Development
@@ -136,18 +115,6 @@ pnpm build
 
 # Start production server
 pnpm start
-
-# Generate Prisma client
-pnpm db:generate
-
-# Push schema changes to database (development only)
-pnpm db:push
-
-# Run migrations (production)
-pnpm db:migrate
-
-# Open Prisma Studio
-pnpm db:studio
 
 # Run type checking
 pnpm typecheck
@@ -173,7 +140,6 @@ AUTH_GOOGLE_ID=""
 AUTH_GOOGLE_SECRET=""
 TWITCH_CLIENT_ID=""
 TWITCH_CLIENT_SECRET=""
-DATABASE_URL=""
 AUTH_SECRET=""
 ```
 
@@ -208,11 +174,10 @@ To learn more about the [T3 Stack](https://create.t3.gg/), check out these resou
 
 The Twitch API has rate limits (30 requests per minute). If you see rate limit errors, wait a moment before refreshing.
 
-### Database Connection Issues
+### Local Storage Issues
 
-- Ensure your PostgreSQL database is running
-- Check that `DATABASE_URL` is correct
-- Verify your database user has the necessary permissions
+- Ensure browser local storage is available
+- Clear the `vodcreator-store` local storage key if state gets corrupted
 
 ### OAuth Callback Issues
 
