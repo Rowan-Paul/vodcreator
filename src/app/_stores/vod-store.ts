@@ -81,13 +81,13 @@ function boundedNumber(
 function normalizeSettings(value: unknown): AppSettings {
   if (!isRecord(value)) return defaultSettings;
 
-  const legacyWidth = boundedNumber(value.chatWidth, 422, 100, 3840);
-  const legacyHeight = boundedNumber(value.chatHeight, 1080, 100, 2160);
+  const legacyWidth = boundedNumber(value.chatWidth, 400, 100, 3840);
+  const legacyHeight = boundedNumber(value.chatHeight, 350, 100, 2160);
   const profile = isChatRenderProfileId(value.chatRenderProfile)
     ? value.chatRenderProfile
-    : legacyWidth === 422 && legacyHeight === 1080
+    : legacyWidth === 400 && legacyHeight === 350
       ? "1080p"
-      : legacyWidth === 720 && legacyHeight === 1440
+      : legacyWidth === 534 && legacyHeight === 466
         ? "1440p"
         : "custom";
 

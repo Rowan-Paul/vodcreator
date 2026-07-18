@@ -19,17 +19,17 @@ export interface ChatRenderSpec {
 export const CHAT_RENDER_PROFILES = {
   "1080p": {
     label: "1080p chat panel",
-    description: "422 × 1080, 18px type, 30 fps",
-    chatWidth: 422,
-    chatHeight: 1080,
+    description: "400 × 350, 18px type, 30 fps",
+    chatWidth: 400,
+    chatHeight: 350,
     fontSize: 18,
     framerate: 30,
   },
   "1440p": {
     label: "1440p chat panel",
-    description: "720 × 1440, 24px type, 60 fps",
-    chatWidth: 720,
-    chatHeight: 1440,
+    description: "534 × 466, 24px type, 60 fps",
+    chatWidth: 534,
+    chatHeight: 466,
     fontSize: 24,
     framerate: 60,
   },
@@ -37,8 +37,8 @@ export const CHAT_RENDER_PROFILES = {
 
 export const defaultChatRenderSettings: ChatRenderSettings = {
   chatRenderProfile: "1080p",
-  customChatWidth: 422,
-  customChatHeight: 1080,
+  customChatWidth: 400,
+  customChatHeight: 350,
   chatFont: "Arial",
 };
 
