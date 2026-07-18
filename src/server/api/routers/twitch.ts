@@ -15,19 +15,22 @@ export const twitchRouter = createTRPCRouter({
       z.object({
         twitchId: z.string().min(1),
         limit: z.number().min(1).max(50),
-        offset: z.number().min(0).default(0),
+        cursor: z.string().nullish(),
       }),
     )
-    .mutation(async ({ input }) => {
-      const requestSize = Math.min(100, input.offset + input.limit);
-      const { videos, cursor } = await twitch.getVideosByUserId(
+    .query(async ({ input }) => {
+      const { videos, cursor: nextCursor } = await twitch.getVideosByUserId(
         input.twitchId,
-        requestSize,
+        input.limit,
+        input.cursor ?? undefined,
       );
 
-      const vods = videos.slice(input.offset, input.offset + input.limit);
-      const hasMore = Boolean(cursor) || videos.length > input.offset + vods.length;
+      const madeProgress = videos.length > 0 && nextCursor !== input.cursor;
 
-      return { vods, hasMore };
+      return {
+        vods: videos,
+        nextCursor: madeProgress ? nextCursor : undefined,
+        fetchedAt: new Date(),
+      };
     }),
 });

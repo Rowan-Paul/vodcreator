@@ -5,20 +5,8 @@ import { useVodStore } from "@/app/_stores/vod-store";
 
 export function ChannelsList() {
   const channels = useVodStore((state) => state.channels);
-  const hydrated = useVodStore((state) => state.hydrated);
 
-  if (!hydrated) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#9146ff] border-t-transparent" />
-          <p className="mt-4 text-[#adadb8]">Loading channels...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!channels || channels.length === 0) {
+  if (channels.length === 0) {
     return (
       <div className="rounded-xl border border-[#1f1f23] bg-[#18181b] p-12 text-center">
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#1f1f23]">
@@ -46,10 +34,7 @@ export function ChannelsList() {
   return (
     <div className="space-y-6">
       {channels.map((channel) => (
-        <VODList
-          key={channel.id}
-          channelId={channel.id}
-        />
+        <VODList key={channel.id} channelId={channel.id} />
       ))}
     </div>
   );

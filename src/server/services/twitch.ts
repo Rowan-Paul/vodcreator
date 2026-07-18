@@ -40,6 +40,7 @@ interface TwitchVideosResponse {
 }
 
 let cachedAccessToken: { token: string; expiresAt: number } | null = null;
+let accessTokenRequest: Promise<string> | null = null;
 
 export async function getAppAccessToken() {
   const now = Date.now();
@@ -48,6 +49,16 @@ export async function getAppAccessToken() {
     return cachedAccessToken.token;
   }
 
+  accessTokenRequest ??= requestAppAccessToken(now);
+
+  try {
+    return await accessTokenRequest;
+  } finally {
+    accessTokenRequest = null;
+  }
+}
+
+async function requestAppAccessToken(requestedAt: number): Promise<string> {
   if (!env.TWITCH_CLIENT_ID || !env.TWITCH_CLIENT_SECRET) {
     throw new Error("TWITCH_CLIENT_ID and TWITCH_CLIENT_SECRET must be set");
   }
@@ -64,11 +75,9 @@ export async function getAppAccessToken() {
   }
 
   const data = (await response.json()) as TwitchTokenResponse;
-  const expiresAt = now + data.expires_in * 1000;
-
   cachedAccessToken = {
     token: data.access_token,
-    expiresAt,
+    expiresAt: requestedAt + data.expires_in * 1000,
   };
 
   return data.access_token;

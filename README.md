@@ -10,9 +10,9 @@ A web application to generate Twitch VOD download commands for TwitchDownloaderC
   - Video download
   - Chat download
   - Chat render
-- Customize chat dimensions and font
-- Paginated VOD loading
-- Persistent local state in browser storage (Zustand `persist`)
+- Choose 1080p, 1440p, or custom chat render templates
+- Cursor-paginated VOD loading with background refresh and retry states
+- Persistent local settings and a bounded recent-VOD cache
 - Google OAuth authentication
 
 ## Tech Stack
@@ -97,7 +97,7 @@ Visit `http://localhost:3000` to start using the app.
    - **Chat Download**: Downloads the chat JSON file
    - **Chat Render**: Renders the chat as a video file
 5. **Load More**: Click "Load More" to fetch additional VODs from Twitch and cache them locally
-6. **Settings**: Customize chat dimensions, font, and VODs per load
+6. **Settings**: Choose a chat render template, font, and VODs per load
 
 ## Development
 

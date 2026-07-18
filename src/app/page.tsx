@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { AddChannel } from "@/app/_components/add-channel";
 import { ChannelsList } from "@/app/_components/channels-list";
+import { HydrationGate } from "@/app/_components/hydration-gate";
 import { Settings } from "@/app/_components/settings";
 import { auth } from "@/server/auth";
 import { HydrateClient } from "@/trpc/server";
@@ -78,23 +79,27 @@ export default async function Home() {
           )}
 
           {session?.user && (
-            <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-              <div className="space-y-6">
-                <div className="rounded-xl border border-[#1f1f23] bg-[#18181b] p-6 shadow-sm">
-                  <h2 className="mb-4 text-lg font-semibold">Add Channel</h2>
-                  <AddChannel />
+            <HydrationGate>
+              <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+                <div className="space-y-6">
+                  <div className="rounded-xl border border-[#1f1f23] bg-[#18181b] p-6 shadow-sm">
+                    <h2 className="mb-4 text-lg font-semibold">Add Channel</h2>
+                    <AddChannel />
+                  </div>
+
+                  <div>
+                    <h2 className="mb-4 text-lg font-semibold">
+                      Your Channels
+                    </h2>
+                    <ChannelsList />
+                  </div>
                 </div>
 
-                <div>
-                  <h2 className="mb-4 text-lg font-semibold">Your Channels</h2>
-                  <ChannelsList />
+                <div className="lg:sticky lg:top-24 lg:h-fit">
+                  <Settings />
                 </div>
               </div>
-
-              <div className="lg:sticky lg:top-24 lg:h-fit">
-                <Settings />
-              </div>
-            </div>
+            </HydrationGate>
           )}
         </main>
       </div>
