@@ -7,6 +7,10 @@
  * need to use are documented accordingly near the end.
  */
 
+// Hard boundary: importing this module from a client component is a build error
+// rather than a runtime crash in the browser. See docs/adr/0001-trpc-server-boundary.md
+import "server-only";
+
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";

@@ -34,7 +34,11 @@ No test framework configured. Test manually via dev server.
 - Use `??` for null coalescing, not `||`
 
 ### Imports
-- Use inline type imports: `import type { X } from "..."` and `import { type Y } from "..."`
+- Type-only imports MUST use `import type { X } from "..."`. `verbatimModuleSyntax`
+  is on, so `import { type X } from "..."` leaves a side-effect import behind and can
+  drag server code into a client bundle (see `docs/adr/0001-trpc-server-boundary.md`).
+  Only use the inline `type` modifier when the import mixes values and types:
+  `import { cva, type VariantProps } from "class-variance-authority"`
 - Use absolute imports with `@/*` alias: `import { auth } from "@/server/auth"`
 - React imports: `import { useState } from "react"`
 - Place type imports first, then regular imports
